@@ -9,5 +9,5 @@ interface VendorRepositoryInterface
     /**
      * @return Vendor[]
      */
-    public function findVendors(DateTimeInterface $deliveryDate): array;
+    public function findVendors(DateTimeInterface $deliveryDate, int $headCount, string $search): array;
 }

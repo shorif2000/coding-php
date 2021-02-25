@@ -21,7 +21,10 @@ final class AppTest extends TestCase
             new Vendor('Vendor 1', 'Great vendor', ['Item 1', 'Item 2'], 2, 100)
         ]);
 
-        $this->underTest = new App($this->mockDataSource);
+        $this->underTest = new App([
+            'search' => [
+            ],
+        ],$this->mockDataSource);
 
         ClockMock::freezeTime(new DateTimeImmutable('2020-01-01 12:00'));
     }
@@ -69,5 +72,41 @@ final class AppTest extends TestCase
         $response = $this->underTest->run('search', ['not-a-date', '13:59', 5]);
 
         $this->assertEquals("Problem when processing request: date must be a string in YYYY-MM-DD format\n", $response);
+    }
+
+    public function testSearch_HeadCount_FindsAllVendors(): void
+    {
+        $this->mockDataSource->setVendors([
+            new Vendor('Vendor 1', 'Great vendor', ['Item 1', 'Item 2'], 2, 100),
+            new Vendor('Vendor 2', 'Not so great vendor', ['Item 3', 'Item 4'], 4, 1000),
+        ]);
+
+        $response = $this->underTest->run('search', ['2020-02-01', '14:01', 5]);
+
+        $this->assertEquals("Vendor 1 - Great vendor: Item 1, Item 2\nVendor 2 - Not so great vendor: Item 3, Item 4\n", $response);
+    }
+
+    public function testSearch_HeadCount_FindSingleVendor(): void
+    {
+        $this->mockDataSource->setVendors([
+            new Vendor('Vendor 1', 'Great vendor', ['Item 1', 'Item 2'], 2, 100),
+            new Vendor('Vendor 2', 'Not so great vendor', ['Item 3', 'Item 4'], 4, 1000),
+        ]);
+
+        $response = $this->underTest->run('search', ['2020-02-01', '14:01', 101]);
+
+        $this->assertEquals("Vendor 2 - Not so great vendor: Item 3, Item 4\n", $response);
+    }
+
+    public function testSearch_Phrase_MatchSingleVendor(): void
+    {
+        $this->mockDataSource->setVendors([
+            new Vendor('Vendor 1', 'Great vendor', ['Item 1', 'Item 2'], 2, 100),
+            new Vendor('Vendor 2', 'Not so great vendor', ['Item 3', 'Item 4'], 4, 1000),
+        ]);
+
+        $response = $this->underTest->run('search', ['2020-02-01', '14:01', 0, '2']);
+
+        $this->assertEquals("Vendor 1 - Great vendor: Item 1, Item 2\n", $response);
     }
 }

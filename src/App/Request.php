@@ -16,6 +16,10 @@ class Request
     public function get(int $paramPosition): string
     {
         if ($paramPosition >= count($this->params)) {
+            if(in_array($paramPosition,[2,3]))
+            {
+                return '';
+            }
             throw new Exception('Requested param at non-existent position');
         }
 

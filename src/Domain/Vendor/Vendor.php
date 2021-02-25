@@ -47,4 +47,17 @@ class Vendor
     {
         return new DateInterval('PT'.$this->noticeHours.'H');
     }
+
+    public function maxHeadcount($headCount): bool
+    {
+        return $this->maxHeadcount >= $headCount;
+    }
+
+    public function matchPhrase($phrase): bool
+    {
+        if(empty($phrase)){
+            return true;
+        }
+        return preg_match('/'.$phrase.'/i', $this->getMenu()) ;
+    }
 }

@@ -17,18 +17,20 @@ class HardcodedVendorRepository implements VendorRepositoryInterface
     }
 
     /**
+     * @param DateTimeInterface $deliveryDate
+     * @param int $headCount
+     * @param string $phrase
      * @return Vendor[]
      */
-    public function findVendors(DateTimeInterface $deliveryDate): array
+    public function findVendors(DateTimeInterface $deliveryDate, int $headCount, string $phrase): array
     {
         $now = DateTimeUtils::now();
 
-        $availableVendors = array_filter(
+        return array_filter(
             $this->dataSource->getVendors(),
-            function (Vendor $vendor) use ($deliveryDate, $now) {
-                return $vendor->canDeliver($deliveryDate, $now);
+            function (Vendor $vendor) use ($deliveryDate, $now, $headCount, $phrase) {
+                return $vendor->canDeliver($deliveryDate, $now) && $vendor->maxHeadcount($headCount) && $vendor->matchPhrase($phrase);
             }
         );
-        return $availableVendors;
     }
 }

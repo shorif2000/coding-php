@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Request;
 use Domain\Vendor\Vendor;
 use Domain\Vendor\VendorRepositoryInterface;
+use Utils\DateTimeUtils;
 
 class SearchController implements Controller
 {
@@ -18,12 +19,17 @@ class SearchController implements Controller
     }
 
     /**
+     * @param Request $request
      * @return string[]
+     * @throws \Exception
      */
     public function searchVendors(Request $request): array
     {
-        // $vendors = $this->vendorRepository->findVendors(...);
-        // return $this->buildResponse($vendors);
+        $deliveryDate = DateTimeUtils::deliveryDate($request->get(0), $request->get(1));
+        $headcount = (int) $request->get(2);
+        $phrase = $request->get(3);
+        $vendors = $this->vendorRepository->findVendors($deliveryDate, $headcount, $phrase);
+        return $this->buildResponse($vendors);
     }
 
     /**
