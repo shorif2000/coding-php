@@ -98,6 +98,13 @@ final class AppTest extends TestCase
         $this->assertEquals("Vendor 2 - Not so great vendor: Item 3, Item 4\n", $response);
     }
 
+    public function testSearch_HeadCountInvalid_ThrowsExeption(): void
+    {
+        $response = $this->underTest->run('search', ['2020-02-01', '14:01', 'a']);
+
+        $this->assertEquals("Problem when processing request: invalid number supplied\n", $response);
+    }
+
     public function testSearch_Phrase_MatchSingleVendor(): void
     {
         $this->mockDataSource->setVendors([
@@ -108,5 +115,12 @@ final class AppTest extends TestCase
         $response = $this->underTest->run('search', ['2020-02-01', '14:01', 0, '2']);
 
         $this->assertEquals("Vendor 1 - Great vendor: Item 1, Item 2\n", $response);
+    }
+
+    public function testSearch_PhraseInvalid_ThrowsExeption(): void
+    {
+        $response = $this->underTest->run('search', ['2020-02-01', '14:01', 0, '&']);
+
+        $this->assertEquals("Problem when processing request: invalid text supplied\n", $response);
     }
 }

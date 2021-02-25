@@ -15,7 +15,8 @@ class DateTimeUtils
     public static function deliveryDate(string $date, string $time): DateTimeImmutable
     {
         $deliveryDate = DateTimeImmutable::createFromFormat('Y-m-dH:i', $date . $time);
-        if($deliveryDate === false) {
+        if($deliveryDate === false)
+        {
             throw new MiddlewareException("date must be a string in YYYY-MM-DD format");
         }
 
